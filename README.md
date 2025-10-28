@@ -16,8 +16,6 @@ cd backend
 npm install
 # Cấu hình .env file
 # Tạo PostgreSQL database
-npm run migrate
-npm run seed
 npm run dev
 ```
 
@@ -28,7 +26,7 @@ Server chạy tại: http://localhost:3000
 ```bash
 cd mobile
 npm install
-npm start
+npx expo start
 ```
 
 Scan QR code bằng Expo Go app để chạy trên điện thoại.
