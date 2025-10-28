@@ -1,18 +1,18 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useAuth } from '../contexts/AuthContext';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useAuth } from "../contexts/AuthContext";
 
 // Screens
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
-import ProductDetailScreen from '../screens/ProductDetailScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import HomeScreen from "../screens/HomeScreen";
+import ProductDetailScreen from "../screens/ProductDetailScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
-import { COLORS } from '../constants/theme';
-import { ActivityIndicator, View } from 'react-native';
+import { COLORS } from "../constants/theme";
+import { ActivityIndicator, View } from "react-native";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,16 +30,24 @@ function HomeTabs() {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          title: 'Trang chủ',
-          tabBarIcon: ({ color }) => <View><View style={{ backgroundColor: color, width: 24, height: 24 }} /></View>,
+          title: "Trang chủ",
+          tabBarIcon: ({ color }) => (
+            <View>
+              <View style={{ backgroundColor: color, width: 24, height: 24 }} />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
         options={{
-          title: 'Tài khoản',
-          tabBarIcon: ({ color }) => <View><View style={{ backgroundColor: color, width: 24, height: 24 }} /></View>,
+          title: "Tài khoản",
+          tabBarIcon: ({ color }) => (
+            <View>
+              <View style={{ backgroundColor: color, width: 24, height: 24 }} />
+            </View>
+          ),
         }}
       />
     </Tab.Navigator>
@@ -66,7 +74,7 @@ function AppStack() {
       <Stack.Screen
         name="ProductDetail"
         component={ProductDetailScreen}
-        options={{ title: 'Chi tiết sản phẩm' }}
+        options={{ title: "Chi tiết sản phẩm" }}
       />
     </Stack.Navigator>
   );
@@ -77,7 +85,7 @@ export default function Navigation() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );

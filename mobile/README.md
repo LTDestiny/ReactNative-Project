@@ -36,14 +36,15 @@ Edit `src/constants/api.ts`:
 
 ```typescript
 // For development on emulator/simulator
-export const API_URL = 'http://localhost:3000/api';
+export const API_URL = "http://localhost:3000/api";
 
 // For testing on physical device
 // Replace with your computer's local IP address
-export const API_URL = 'http://192.168.1.100:3000/api';
+export const API_URL = "http://192.168.1.100:3000/api";
 ```
 
 **Important:** To find your IP address:
+
 - Windows: Run `ipconfig` in CMD
 - Mac/Linux: Run `ifconfig` in Terminal
 - Look for your local network IP (usually starts with 192.168.x.x)
@@ -59,16 +60,19 @@ This will open Expo DevTools in your browser.
 ### 4. Run on device/emulator
 
 **On Physical Device:**
+
 1. Install "Expo Go" app from App Store (iOS) or Google Play (Android)
 2. Scan the QR code from the terminal or Expo DevTools
 3. The app will load on your device
 
 **On iOS Simulator:**
+
 ```bash
 npm run ios
 ```
 
 **On Android Emulator:**
+
 ```bash
 npm run android
 ```
@@ -103,10 +107,12 @@ mobile/
 ## 🎨 Screens
 
 ### Authentication
+
 - **Login Screen** - User login with demo accounts
 - **Register Screen** - New user registration
 
 ### Main App
+
 - **Home Screen** - Product listing with search and category filters
 - **Product Detail Screen** - Detailed product information with image gallery
 - **Profile Screen** - User profile and settings
@@ -116,10 +122,12 @@ mobile/
 The app includes quick-fill buttons for demo accounts:
 
 **Customer Account:**
+
 - Email: `customer@example.com`
 - Password: `Password123!`
 
 **Admin Account:**
+
 - Email: `admin@example.com`
 - Password: `AdminPass123!`
 
@@ -158,16 +166,19 @@ The app includes quick-fill buttons for demo accounts:
 ### Common Issues
 
 **Cannot connect to backend:**
+
 - Check if backend is running on http://localhost:3000
 - Verify API_URL is set correctly
 - For physical devices, use computer's local IP instead of localhost
 - Check firewall settings
 
 **Module not found errors:**
+
 - Run `npm install` again
 - Clear cache: `npx expo start --clear`
 
 **Port already in use:**
+
 - Kill process on port 19000: `npx kill-port 19000`
 - Or use different port: `npx expo start --port 19001`
 
@@ -182,6 +193,7 @@ The app includes quick-fill buttons for demo accounts:
 ### API Integration
 
 All API calls go through `src/services/api.ts`:
+
 - Automatic token injection
 - Token refresh on 401
 - Error handling
@@ -207,6 +219,7 @@ All API calls go through `src/services/api.ts`:
 ## 📞 Support
 
 For issues and questions:
+
 1. Check backend is running properly
 2. Verify network connection
 3. Check console logs for errors

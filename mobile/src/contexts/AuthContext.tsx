@@ -1,8 +1,14 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api';
-import { User, LoginRequest, RegisterRequest, AuthResponse } from '../types';
-import { API_ENDPOINTS } from '../constants/api';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../services/api";
+import { User, LoginRequest, RegisterRequest, AuthResponse } from "../types";
+import { API_ENDPOINTS } from "../constants/api";
 
 interface AuthContextData {
   user: User | null;
@@ -27,14 +33,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadStoredUser = async () => {
     try {
-      const storedUser = await AsyncStorage.getItem('user');
-      const accessToken = await AsyncStorage.getItem('accessToken');
+      const storedUser = await AsyncStorage.getItem("user");
+      const accessToken = await AsyncStorage.getItem("accessToken");
 
       if (storedUser && accessToken) {
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Failed to load user:', error);
+      console.error("Failed to load user:", error);
     } finally {
       setIsLoading(false);
     }
@@ -42,46 +48,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (credentials: LoginRequest) => {
     try {
-      const response = await api.post<AuthResponse>(API_ENDPOINTS.LOGIN, credentials);
+      const response = await api.post<AuthResponse>(
+        API_ENDPOINTS.LOGIN,
+        credentials
+      );
       const { user, accessToken, refreshToken } = response.data;
 
       // Store tokens and user
       await AsyncStorage.multiSet([
-        ['accessToken', accessToken],
-        ['refreshToken', refreshToken],
-        ['user', JSON.stringify(user)],
+        ["accessToken", accessToken],
+        ["refreshToken", refreshToken],
+        ["user", JSON.stringify(user)],
       ]);
 
       setUser(user);
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Login failed');
+      throw new Error(error.response?.data?.error || "Login failed");
     }
   };
 
   const register = async (data: RegisterRequest) => {
     try {
-      const response = await api.post<AuthResponse>(API_ENDPOINTS.REGISTER, data);
+      const response = await api.post<AuthResponse>(
+        API_ENDPOINTS.REGISTER,
+        data
+      );
       const { user, accessToken, refreshToken } = response.data;
 
       // Store tokens and user
       await AsyncStorage.multiSet([
-        ['accessToken', accessToken],
-        ['refreshToken', refreshToken],
-        ['user', JSON.stringify(user)],
+        ["accessToken", accessToken],
+        ["refreshToken", refreshToken],
+        ["user", JSON.stringify(user)],
       ]);
 
       setUser(user);
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Registration failed');
+      throw new Error(error.response?.data?.error || "Registration failed");
     }
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
+      await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -90,10 +102,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.get<{ user: User }>(API_ENDPOINTS.PROFILE);
       const { user } = response.data;
 
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem("user", JSON.stringify(user));
       setUser(user);
     } catch (error) {
-      console.error('Failed to refresh user:', error);
+      console.error("Failed to refresh user:", error);
     }
   };
 
@@ -117,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

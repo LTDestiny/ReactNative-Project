@@ -1,17 +1,22 @@
 export const COLORS = {
-  primary: '#2563eb',
-  primaryDark: '#1d4ed8',
-  secondary: '#64748b',
-  success: '#10b981',
-  danger: '#ef4444',
-  warning: '#f59e0b',
-  light: '#f1f5f9',
-  dark: '#1e293b',
-  white: '#ffffff',
-  black: '#000000',
-  gray: '#94a3b8',
-  border: '#e2e8f0',
-  background: '#f8fafc',
+  // Orange-Yellow theme for mechanical products
+  primary: "#FF8C00", // Dark Orange
+  primaryDark: "#FF6F00", // Darker Orange
+  primaryLight: "#FFB84D", // Light Orange
+  secondary: "#FFA500", // Orange
+  accent: "#FFD700", // Gold
+  success: "#10b981",
+  danger: "#ef4444",
+  warning: "#f59e0b",
+  light: "#FFF8E7", // Warm light background
+  dark: "#1e293b",
+  white: "#ffffff",
+  black: "#000000",
+  gray: "#94a3b8",
+  textGray: "#6B7280",
+  border: "#FFE4B5", // Warm border
+  background: "#FFFAF0", // Warm white background
+  cardBg: "#FFFFFF",
 };
 
 export const SIZES = {
@@ -35,8 +40,8 @@ export const SIZES = {
 };
 
 export const FONTS = {
-  regular: 'System',
-  medium: 'System',
-  bold: 'System',
-  semiBold: 'System',
+  regular: "System",
+  medium: "System",
+  bold: "System",
+  semiBold: "System",
 };

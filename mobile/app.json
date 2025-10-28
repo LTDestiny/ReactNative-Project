@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b1575b5b-6996-4a27-afd8-b5ada3329a37"
+      }
+    },
+    "owner": "ltdestiny"
   }
 }

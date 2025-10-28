@@ -41,7 +41,7 @@ export async function getProducts(req: Request<{}, {}, {}, ProductQuery>, res: R
       FROM products p
       LEFT JOIN brands b ON p.brand_id = b.id
       LEFT JOIN categories c ON p.category_id = c.id
-      LEFT JOIN inventory i ON p.product_id = i.product_id
+      LEFT JOIN inventory i ON p.id = i.product_id
       LEFT JOIN reviews r ON p.id = r.product_id
       WHERE p.is_active = true
     `;
@@ -182,7 +182,7 @@ export async function getProductById(req: Request, res: Response) {
       FROM products p
       LEFT JOIN brands b ON p.brand_id = b.id
       LEFT JOIN categories c ON p.category_id = c.id
-      LEFT JOIN inventory i ON p.product_id = i.product_id
+      LEFT JOIN inventory i ON p.id = i.product_id
       LEFT JOIN reviews r ON p.id = r.product_id
       WHERE p.id = $1 AND p.is_active = true
       GROUP BY p.id, b.name, b.slug, c.name, c.slug, i.quantity

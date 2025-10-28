@@ -51,16 +51,19 @@ Scan QR code bằng Expo Go app để chạy trên điện thoại.
 ## 👥 Demo Accounts
 
 **Customer:**
+
 - Email: customer@example.com
 - Password: Password123!
 
 **Admin:**
+
 - Email: admin@example.com
 - Password: AdminPass123!
 
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - Node.js + Express
 - TypeScript
 - PostgreSQL
@@ -69,6 +72,7 @@ Scan QR code bằng Expo Go app để chạy trên điện thoại.
 - Stripe (payment ready)
 
 ### Mobile
+
 - React Native (Expo)
 - TypeScript
 - React Navigation

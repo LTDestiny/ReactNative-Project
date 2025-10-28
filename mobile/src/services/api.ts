@@ -1,19 +1,19 @@
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from '../constants/api';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "../constants/api";
 
 const api = axios.create({
   baseURL: API_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor - Add auth token
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('accessToken');
+    const token = await AsyncStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,21 +35,21 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = await AsyncStorage.getItem('refreshToken');
+        const refreshToken = await AsyncStorage.getItem("refreshToken");
         if (refreshToken) {
           const response = await axios.post(`${API_URL}/auth/refresh`, {
             refreshToken,
           });
 
           const { accessToken } = response.data;
-          await AsyncStorage.setItem('accessToken', accessToken);
+          await AsyncStorage.setItem("accessToken", accessToken);
 
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
         // Refresh failed, logout user
-        await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
+        await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
         return Promise.reject(refreshError);
       }
     }
