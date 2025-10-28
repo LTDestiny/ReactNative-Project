@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +24,7 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -60,6 +62,25 @@ export default function HomeScreen() {
       setProducts(response.data.products);
     } catch (error) {
       console.error("Load products error:", error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Reload both categories/brands and products
+      const [categoriesRes, brandsRes] = await Promise.all([
+        api.get(API_ENDPOINTS.CATEGORIES),
+        api.get(API_ENDPOINTS.BRANDS),
+      ]);
+      setCategories(categoriesRes.data.categories);
+      setBrands(brandsRes.data.brands);
+
+      await loadProducts();
+    } catch (error) {
+      Alert.alert("Lỗi", "Không thể làm mới dữ liệu");
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -165,6 +186,16 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id}
           numColumns={2}
           contentContainerStyle={styles.productList}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
+              title="Đang làm mới..."
+              titleColor={COLORS.primary}
+            />
+          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Không tìm thấy sản phẩm</Text>
@@ -223,13 +254,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   categoryList: {
-    maxHeight: 85,
+    height: 120,
+    maxHeight: 120,
     backgroundColor: COLORS.white,
     borderBottomWidth: 2,
     borderBottomColor: COLORS.border,
   },
   categoryListContent: {
     padding: SIZES.padding + 4,
+    height: 85,
   },
   categoryChip: {
     paddingHorizontal: 20,

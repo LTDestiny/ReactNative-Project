@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Alert,
   Dimensions,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import api from "../services/api";
@@ -22,6 +23,7 @@ export default function ProductDetailScreen({ route }: any) {
   const { productId } = route.params;
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
@@ -39,6 +41,19 @@ export default function ProductDetailScreen({ route }: any) {
       Alert.alert("Lỗi", "Không thể tải thông tin sản phẩm");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const response = await api.get(API_ENDPOINTS.PRODUCT_BY_ID(productId));
+      setProduct(response.data.product);
+    } catch (error: any) {
+      console.error("Error refreshing product:", error.message);
+      Alert.alert("Lỗi", "Không thể làm mới thông tin sản phẩm");
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -78,7 +93,19 @@ export default function ProductDetailScreen({ route }: any) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+            title="Đang làm mới..."
+            titleColor={COLORS.primary}
+          />
+        }
+      >
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: images[selectedImageIndex].url }}
