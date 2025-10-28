@@ -14,10 +14,12 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: config.cors.origin,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.cors.origin,
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({

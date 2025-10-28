@@ -187,14 +187,14 @@ const migrations = [
 
 export async function runMigrations() {
   console.log('🚀 Running database migrations...');
-  
+
   try {
     for (let i = 0; i < migrations.length; i++) {
       console.log(`Running migration ${i + 1}/${migrations.length}...`);
       await db.query(migrations[i]);
       console.log(`✅ Migration ${i + 1} completed`);
     }
-    
+
     console.log('✅ All migrations completed successfully!');
   } catch (error) {
     console.error('❌ Migration failed:', error);

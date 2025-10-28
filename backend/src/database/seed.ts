@@ -59,9 +59,7 @@ const seedData = {
       category: 'may-han',
       weight_grams: 5000,
       stock: 5,
-      images: [
-        'https://images.unsplash.com/photo-1581092918484-8313e1f6e825?w=500',
-      ],
+      images: ['https://images.unsplash.com/photo-1581092918484-8313e1f6e825?w=500'],
     },
     {
       sku: 'DRL-003',
@@ -90,9 +88,7 @@ const seedData = {
       category: 'dung-cu-cam-tay',
       weight_grams: 4200,
       stock: 15,
-      images: [
-        'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=500',
-      ],
+      images: ['https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=500'],
     },
     {
       sku: 'PRT-005',
@@ -105,9 +101,7 @@ const seedData = {
       category: 'phu-tung',
       weight_grams: 800,
       stock: 30,
-      images: [
-        'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=500',
-      ],
+      images: ['https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=500'],
     },
     {
       sku: 'PRT-006',
@@ -120,9 +114,7 @@ const seedData = {
       category: 'phu-tung',
       weight_grams: 1000,
       stock: 50,
-      images: [
-        'https://images.unsplash.com/photo-1581092918484-8313e1f6e825?w=500',
-      ],
+      images: ['https://images.unsplash.com/photo-1581092918484-8313e1f6e825?w=500'],
     },
   ],
 };
@@ -133,7 +125,9 @@ export async function seed() {
   try {
     // Clear existing data (optional - comment out to keep existing data)
     console.log('Clearing existing data...');
-    await db.query('TRUNCATE users, categories, brands, products, product_images, inventory CASCADE');
+    await db.query(
+      'TRUNCATE users, categories, brands, products, product_images, inventory CASCADE'
+    );
 
     // Seed users
     console.log('Seeding users...');
@@ -154,10 +148,11 @@ export async function seed() {
     const categoryIds: { [slug: string]: string } = {};
     for (const category of seedData.categories) {
       const id = uuidv4();
-      await db.query(
-        'INSERT INTO categories (id, name, slug) VALUES ($1, $2, $3)',
-        [id, category.name, category.slug]
-      );
+      await db.query('INSERT INTO categories (id, name, slug) VALUES ($1, $2, $3)', [
+        id,
+        category.name,
+        category.slug,
+      ]);
       categoryIds[category.slug] = id;
       console.log(`  ✅ Created category: ${category.name}`);
     }
@@ -167,10 +162,11 @@ export async function seed() {
     const brandIds: { [slug: string]: string } = {};
     for (const brand of seedData.brands) {
       const id = uuidv4();
-      await db.query(
-        'INSERT INTO brands (id, name, slug) VALUES ($1, $2, $3)',
-        [id, brand.name, brand.slug]
-      );
+      await db.query('INSERT INTO brands (id, name, slug) VALUES ($1, $2, $3)', [
+        id,
+        brand.name,
+        brand.slug,
+      ]);
       brandIds[brand.slug] = id;
       console.log(`  ✅ Created brand: ${brand.name}`);
     }
@@ -199,10 +195,11 @@ export async function seed() {
       );
 
       // Add inventory
-      await db.query(
-        'INSERT INTO inventory (id, product_id, quantity) VALUES ($1, $2, $3)',
-        [uuidv4(), productId, product.stock]
-      );
+      await db.query('INSERT INTO inventory (id, product_id, quantity) VALUES ($1, $2, $3)', [
+        uuidv4(),
+        productId,
+        product.stock,
+      ]);
 
       // Add images
       for (let i = 0; i < product.images.length; i++) {

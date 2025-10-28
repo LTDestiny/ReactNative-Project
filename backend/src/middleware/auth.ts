@@ -13,14 +13,14 @@ declare global {
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
     const decoded = verifyAccessToken(token);
-    
+
     req.user = decoded;
     next();
   } catch (error) {

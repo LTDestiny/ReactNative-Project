@@ -3,9 +3,7 @@ import { db } from '../database';
 
 export async function getCategories(req: Request, res: Response) {
   try {
-    const result = await db.query(
-      'SELECT * FROM categories ORDER BY name ASC'
-    );
+    const result = await db.query('SELECT * FROM categories ORDER BY name ASC');
 
     res.json({ categories: result.rows });
   } catch (error) {
@@ -16,9 +14,7 @@ export async function getCategories(req: Request, res: Response) {
 
 export async function getBrands(req: Request, res: Response) {
   try {
-    const result = await db.query(
-      'SELECT * FROM brands ORDER BY name ASC'
-    );
+    const result = await db.query('SELECT * FROM brands ORDER BY name ASC');
 
     res.json({ brands: result.rows });
   } catch (error) {

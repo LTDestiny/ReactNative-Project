@@ -135,6 +135,7 @@ backend/
 ## 📚 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:3000/api
 ```
@@ -142,6 +143,7 @@ http://localhost:3000/api
 ### Authentication
 
 #### Register
+
 ```bash
 POST /api/auth/register
 Content-Type: application/json
@@ -155,6 +157,7 @@ Content-Type: application/json
 ```
 
 #### Login
+
 ```bash
 POST /api/auth/login
 Content-Type: application/json
@@ -174,6 +177,7 @@ Content-Type: application/json
 ```
 
 #### Refresh Token
+
 ```bash
 POST /api/auth/refresh
 Content-Type: application/json
@@ -184,6 +188,7 @@ Content-Type: application/json
 ```
 
 #### Get Profile
+
 ```bash
 GET /api/auth/profile
 Authorization: Bearer <accessToken>
@@ -192,16 +197,19 @@ Authorization: Bearer <accessToken>
 ### Products
 
 #### Get Products (with filters)
+
 ```bash
 GET /api/products?query=máy&category=may-khoan&brand=makita&minPrice=500000&maxPrice=2000000&page=1&limit=20
 ```
 
 #### Get Product by ID
+
 ```bash
 GET /api/products/:id
 ```
 
 #### Create Product (Admin only)
+
 ```bash
 POST /api/products
 Authorization: Bearer <adminAccessToken>
@@ -225,6 +233,7 @@ Content-Type: application/json
 ```
 
 #### Update Product (Admin only)
+
 ```bash
 PUT /api/products/:id
 Authorization: Bearer <adminAccessToken>
@@ -237,6 +246,7 @@ Content-Type: application/json
 ```
 
 #### Delete Product (Admin only)
+
 ```bash
 DELETE /api/products/:id
 Authorization: Bearer <adminAccessToken>
@@ -245,11 +255,13 @@ Authorization: Bearer <adminAccessToken>
 ### Categories & Brands
 
 #### Get Categories
+
 ```bash
 GET /api/categories
 ```
 
 #### Get Brands
+
 ```bash
 GET /api/brands
 ```
@@ -259,21 +271,25 @@ GET /api/brands
 Sau khi chạy seed, bạn có thể đăng nhập với:
 
 **Customer Account:**
+
 - Email: `customer@example.com`
 - Password: `Password123!`
 
 **Admin Account:**
+
 - Email: `admin@example.com`
 - Password: `AdminPass123!`
 
 ## 🧪 Test API với cURL
 
 ### Test Health Check
+
 ```bash
 curl http://localhost:3000/health
 ```
 
 ### Test Register
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -285,6 +301,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 ```
 
 ### Test Login
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -295,11 +312,13 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```
 
 ### Test Get Products
+
 ```bash
 curl http://localhost:3000/api/products
 ```
 
 ### Test Get Product with Auth
+
 ```bash
 # Lấy token từ login response trước
 TOKEN="your_access_token_here"
@@ -311,6 +330,7 @@ curl http://localhost:3000/api/auth/profile \
 ## 🗄️ Database Schema
 
 ### Users
+
 - id (uuid, PK)
 - email (unique)
 - password_hash
@@ -320,6 +340,7 @@ curl http://localhost:3000/api/auth/profile \
 - created_at, updated_at
 
 ### Products
+
 - id (uuid, PK)
 - sku (unique)
 - name
@@ -333,6 +354,7 @@ curl http://localhost:3000/api/auth/profile \
 - created_at, updated_at
 
 ### Categories, Brands, Product Images, Inventory, Orders, Cart, Reviews...
+
 (Xem chi tiết trong file `src/database/migrate.ts`)
 
 ## 🔐 Security
@@ -347,16 +369,19 @@ curl http://localhost:3000/api/auth/profile \
 ## 🛠️ Development
 
 ### Chạy migrations
+
 ```bash
 npm run migrate
 ```
 
 ### Seed lại database
+
 ```bash
 npm run seed
 ```
 
 ### Build production
+
 ```bash
 npm run build
 ```

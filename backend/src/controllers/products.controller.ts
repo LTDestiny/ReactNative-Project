@@ -14,15 +14,7 @@ interface ProductQuery {
 
 export async function getProducts(req: Request<{}, {}, {}, ProductQuery>, res: Response) {
   try {
-    const {
-      query = '',
-      category,
-      brand,
-      minPrice,
-      maxPrice,
-      page = '1',
-      limit = '20',
-    } = req.query;
+    const { query = '', category, brand, minPrice, maxPrice, page = '1', limit = '20' } = req.query;
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
@@ -255,10 +247,11 @@ export async function createProduct(req: Request, res: Response) {
       const product = productResult.rows[0];
 
       // Create inventory record
-      await client.query(
-        'INSERT INTO inventory (id, product_id, quantity) VALUES ($1, $2, $3)',
-        [uuidv4(), product.id, stock]
-      );
+      await client.query('INSERT INTO inventory (id, product_id, quantity) VALUES ($1, $2, $3)', [
+        uuidv4(),
+        product.id,
+        stock,
+      ]);
 
       // Add images if provided
       if (images.length > 0) {
@@ -317,7 +310,18 @@ export async function updateProduct(req: Request, res: Response) {
            updated_at = now()
        WHERE id = $1
        RETURNING *`,
-      [id, sku, name, description, price, sale_price, brand_id, category_id, weight_grams, is_active]
+      [
+        id,
+        sku,
+        name,
+        description,
+        price,
+        sale_price,
+        brand_id,
+        category_id,
+        weight_grams,
+        is_active,
+      ]
     );
 
     if (result.rows.length === 0) {

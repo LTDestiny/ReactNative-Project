@@ -11,6 +11,9 @@ class Database {
       database: config.database.name,
       user: config.database.user,
       password: config.database.password,
+      ssl: {
+        rejectUnauthorized: false, // For Neon/cloud databases
+      },
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,

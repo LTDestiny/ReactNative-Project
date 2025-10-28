@@ -40,7 +40,7 @@ export async function register(req: Request<{}, {}, RegisterRequest>, res: Respo
 
     // Check if user exists
     const existingUser = await db.query('SELECT id FROM users WHERE email = $1', [email]);
-    
+
     if (existingUser.rows.length > 0) {
       return res.status(409).json({ error: 'Email already registered' });
     }
@@ -109,7 +109,7 @@ export async function login(req: Request<{}, {}, LoginRequest>, res: Response) {
 
     // Verify password
     const isValid = await comparePassword(password, user.password_hash);
-    
+
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
