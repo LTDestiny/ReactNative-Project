@@ -254,15 +254,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   categoryList: {
-    height: 120,
-    maxHeight: 120,
+    maxHeight: 85,
+    height: 85,
     backgroundColor: COLORS.white,
     borderBottomWidth: 2,
     borderBottomColor: COLORS.border,
   },
   categoryListContent: {
-    padding: SIZES.padding + 4,
-    height: 85,
+    alignItems: "center",
+    paddingHorizontal: SIZES.padding,
   },
   categoryChip: {
     paddingHorizontal: 20,
@@ -277,6 +277,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    height: 45,
+    justifyContent: "center",
   },
   categoryChipActive: {
     backgroundColor: COLORS.primary,
