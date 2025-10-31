@@ -10,6 +10,12 @@ import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import CartScreen from "../screens/CartScreen";
+import CheckoutScreen from "../screens/CheckoutScreen";
+import OrdersScreen from "../screens/OrdersScreen";
+import OrderDetailScreen from "../screens/OrderDetailScreen";
+import AddressesScreen from "../screens/AddressesScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 import { COLORS } from "../constants/theme";
 import { ActivityIndicator, View } from "react-native";
@@ -31,6 +37,30 @@ function HomeTabs() {
         component={HomeScreen}
         options={{
           title: "Trang chủ",
+          tabBarIcon: ({ color }) => (
+            <View>
+              <View style={{ backgroundColor: color, width: 24, height: 24 }} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="CartTab"
+        component={CartScreen}
+        options={{
+          title: "Giỏ hàng",
+          tabBarIcon: ({ color }) => (
+            <View>
+              <View style={{ backgroundColor: color, width: 24, height: 24 }} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="OrdersTab"
+        component={OrdersScreen}
+        options={{
+          title: "Đơn hàng",
           tabBarIcon: ({ color }) => (
             <View>
               <View style={{ backgroundColor: color, width: 24, height: 24 }} />
@@ -75,6 +105,26 @@ function AppStack() {
         name="ProductDetail"
         component={ProductDetailScreen}
         options={{ title: "Chi tiết sản phẩm" }}
+      />
+      <Stack.Screen
+        name="Checkout"
+        component={CheckoutScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="OrderDetail"
+        component={OrderDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addresses"
+        component={AddressesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
