@@ -9,6 +9,9 @@ import { errorHandler, notFound } from './middleware/error';
 import authRoutes from './routes/auth.routes';
 import productsRoutes from './routes/products.routes';
 import miscRoutes from './routes/misc.routes';
+import cartRoutes from './routes/cart.routes';
+import ordersRoutes from './routes/orders.routes';
+import addressesRoutes from './routes/addresses.routes';
 
 const app = express();
 
@@ -43,6 +46,9 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productsRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/addresses', addressesRoutes);
 app.use('/api', miscRoutes);
 
 // Error handling
