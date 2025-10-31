@@ -52,27 +52,72 @@ export interface Brand {
 
 export interface CartItem {
   id: string;
-  product: Product;
   quantity: number;
+  added_at: string;
+  product_id: string;
+  product_name: string;
+  price: number;
+  sale_price?: number;
+  sku?: string;
+  image_url?: string;
+  stock: number;
+  brand_name?: string;
+}
+
+export interface Cart {
+  cart_id: string;
+  items: CartItem[];
+  subtotal: string;
+  item_count: number;
+}
+
+export interface Address {
+  id: string;
+  user_id: string;
+  label?: string;
+  address_line: string;
+  city: string;
+  district?: string;
+  postal_code?: string;
+  phone?: string;
+  is_default: boolean;
+  created_at: string;
 }
 
 export interface Order {
   id: string;
   user_id: string;
+  address_id?: string;
   total_amount: number;
   shipping_fee: number;
   status: string;
   payment_status: string;
   created_at: string;
-  items: OrderItem[];
+  updated_at: string;
+  item_count?: number;
+  address_line?: string;
+  city?: string;
+  district?: string;
 }
 
 export interface OrderItem {
   id: string;
+  order_id: string;
+  product_id: string;
   product_name: string;
   quantity: number;
   unit_price: number;
   total_price: number;
+  image_url?: string;
+}
+
+export interface OrderDetail {
+  order: Order & {
+    address_label?: string;
+    postal_code?: string;
+    delivery_phone?: string;
+  };
+  items: OrderItem[];
 }
 
 export interface LoginRequest {
