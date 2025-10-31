@@ -12,6 +12,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import api from "../services/api";
 import { Product } from "../types";
 import { API_ENDPOINTS } from "../constants/api";
@@ -20,11 +21,13 @@ import { COLORS, SIZES } from "../constants/theme";
 const { width } = Dimensions.get("window");
 
 export default function ProductDetailScreen({ route }: any) {
+  const navigation = useNavigation();
   const { productId } = route.params;
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     loadProduct();
@@ -62,6 +65,32 @@ export default function ProductDetailScreen({ route }: any) {
       style: "currency",
       currency: "VND",
     }).format(price);
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      setAddingToCart(true);
+      await api.post("/cart/items", {
+        product_id: productId,
+        quantity: 1,
+      });
+      
+      Alert.alert("Thành công", "Đã thêm vào giỏ hàng", [
+        { text: "Tiếp tục mua", style: "cancel" },
+        {
+          text: "Xem giỏ hàng",
+          onPress: () => (navigation.navigate as any)("Main", { screen: "CartTab" }),
+        },
+      ]);
+    } catch (error: any) {
+      console.error("Failed to add to cart:", error);
+      Alert.alert(
+        "Lỗi",
+        error.response?.data?.message || "Không thể thêm vào giỏ hàng"
+      );
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   if (isLoading) {
@@ -172,19 +201,18 @@ export default function ProductDetailScreen({ route }: any) {
           <TouchableOpacity
             style={[
               styles.addToCartButton,
-              product.stock === 0 && styles.buttonDisabled,
+              (product.stock === 0 || addingToCart) && styles.buttonDisabled,
             ]}
-            disabled={product.stock === 0}
-            onPress={() =>
-              Alert.alert(
-                "Thông báo",
-                "Tính năng giỏ hàng đang được phát triển"
-              )
-            }
+            disabled={product.stock === 0 || addingToCart}
+            onPress={handleAddToCart}
           >
-            <Text style={styles.addToCartText}>
-              {product.stock === 0 ? "Hết hàng" : "Thêm vào giỏ hàng"}
-            </Text>
+            {addingToCart ? (
+              <ActivityIndicator color={COLORS.white} />
+            ) : (
+              <Text style={styles.addToCartText}>
+                {product.stock === 0 ? "Hết hàng" : "Thêm vào giỏ hàng"}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
