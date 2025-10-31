@@ -9,10 +9,12 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 import { COLORS, SIZES } from "../constants/theme";
 
 export default function ProfileScreen() {
+  const navigation = useNavigation();
   const { user, logout } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -68,42 +70,68 @@ export default function ProfileScreen() {
         <View style={styles.menu}>
           <TouchableOpacity
             style={styles.menuItem}
-            onPress={() =>
-              Alert.alert("Thông báo", "Tính năng đang được phát triển")
-            }
+            onPress={() => (navigation.navigate as any)("Main", { screen: "OrdersTab" })}
           >
-            <Text style={styles.menuText}>📦 Đơn hàng của tôi</Text>
+            <View style={styles.menuIcon}>
+              <Text style={styles.menuEmoji}>📦</Text>
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Đơn hàng của tôi</Text>
+              <Text style={styles.menuSubtext}>Xem lịch sử mua hàng</Text>
+            </View>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => (navigation.navigate as any)("Addresses")}
+          >
+            <View style={styles.menuIcon}>
+              <Text style={styles.menuEmoji}>📍</Text>
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Địa chỉ giao hàng</Text>
+              <Text style={styles.menuSubtext}>Quản lý địa chỉ của bạn</Text>
+            </View>
+            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() =>
-              Alert.alert("Thông báo", "Tính năng đang được phát triển")
+              (navigation.navigate as any)("Settings")
             }
           >
-            <Text style={styles.menuText}>📍 Địa chỉ giao hàng</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() =>
-              Alert.alert("Thông báo", "Tính năng đang được phát triển")
-            }
-          >
-            <Text style={styles.menuText}>⚙️ Cài đặt</Text>
+            <View style={styles.menuIcon}>
+              <Text style={styles.menuEmoji}>⚙️</Text>
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Cài đặt</Text>
+              <Text style={styles.menuSubtext}>Tùy chỉnh tài khoản</Text>
+            </View>
+            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           {user?.role === "admin" && (
             <TouchableOpacity
-              style={styles.menuItem}
+              style={[styles.menuItem, styles.adminMenuItem]}
               onPress={() =>
                 Alert.alert(
-                  "Thông báo",
-                  "Tính năng quản trị đang được phát triển"
+                  "Quản trị viên",
+                  "Tính năng admin đang được phát triển"
                 )
               }
             >
-              <Text style={styles.menuText}>👨‍💼 Quản trị</Text>
+              <View style={styles.menuIcon}>
+                <Text style={styles.menuEmoji}>👑</Text>
+              </View>
+              <View style={styles.menuContent}>
+                <Text style={[styles.menuText, styles.adminText]}>
+                  Quản trị viên
+                </Text>
+                <Text style={styles.menuSubtext}>Quản lý sản phẩm & đơn hàng</Text>
+              </View>
+              <Text style={styles.menuArrow}>›</Text>
             </TouchableOpacity>
           )}
 
@@ -111,13 +139,20 @@ export default function ProfileScreen() {
             style={[styles.menuItem, styles.logoutButton]}
             onPress={handleLogout}
           >
-            <Text style={styles.logoutText}>🚪 Đăng xuất</Text>
+            <View style={styles.menuIcon}>
+              <Text style={styles.menuEmoji}>🚪</Text>
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.logoutText}>Đăng xuất</Text>
+              <Text style={styles.menuSubtext}>Thoát khỏi tài khoản</Text>
+            </View>
+            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Version 1.0.0</Text>
-          <Text style={styles.footerText}>Mechanical Marketplace © 2024</Text>
+          <Text style={styles.footerText}>Phiên bản 1.0.0</Text>
+          <Text style={styles.footerText}>Cửa hàng cơ khí © 2025</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -202,6 +237,8 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.white,
     padding: SIZES.padding + 6,
     borderRadius: SIZES.borderRadius + 4,
@@ -214,10 +251,42 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  menuIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.light,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: SIZES.padding,
+  },
+  menuEmoji: {
+    fontSize: 24,
+  },
+  menuContent: {
+    flex: 1,
+  },
   menuText: {
     fontSize: SIZES.md + 2,
     color: COLORS.dark,
     fontWeight: "600",
+    marginBottom: 2,
+  },
+  menuSubtext: {
+    fontSize: SIZES.sm,
+    color: COLORS.gray,
+  },
+  menuArrow: {
+    fontSize: 28,
+    color: COLORS.gray,
+    fontWeight: "300",
+  },
+  adminMenuItem: {
+    borderColor: COLORS.accent,
+    backgroundColor: "#FFF8E1",
+  },
+  adminText: {
+    color: COLORS.primary,
   },
   logoutButton: {
     backgroundColor: COLORS.danger,
@@ -233,7 +302,6 @@ const styles = StyleSheet.create({
     fontSize: SIZES.md + 2,
     color: COLORS.white,
     fontWeight: "700",
-    textAlign: "center",
   },
   footer: {
     alignItems: "center",
