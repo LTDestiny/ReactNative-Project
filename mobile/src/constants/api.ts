@@ -19,11 +19,18 @@ export const API_ENDPOINTS = {
   CATEGORIES: "/categories",
   BRANDS: "/brands",
 
-  // Cart (to be implemented)
+  // Cart
   CART: "/cart",
   CART_ITEMS: "/cart/items",
+  CART_ITEM: (id: string) => `/cart/items/${id}`,
 
-  // Orders (to be implemented)
+  // Orders
   ORDERS: "/orders",
   ORDER_BY_ID: (id: string) => `/orders/${id}`,
+  CANCEL_ORDER: (id: string) => `/orders/${id}/cancel`,
+
+  // Addresses
+  ADDRESSES: "/addresses",
+  ADDRESS_BY_ID: (id: string) => `/addresses/${id}`,
+  SET_DEFAULT_ADDRESS: (id: string) => `/addresses/${id}/set-default`,
 };
