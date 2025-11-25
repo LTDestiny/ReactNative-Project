@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "mobile",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "mechanicalapp",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ltdestiny.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b1575b5b-6996-4a27-afd8-b5ada3329a37"
+      },
+    "googleOAuth": {
+      "expoClientId": "YOUR_GOOGLE_EXPO_CLIENT_ID",
+      "androidClientId": "BB:63:A8:EE:81:4A:98:BD:65:6B:61:DA:2B:F3:2E:54:40:33:D0:FA.apps.googleusercontent.com",
+      "iosClientId": "YOUR_GOOGLE_IOS_CLIENT_ID",
+      "webClientId": "1082759899096-v1tcl5a8d0q727d2k0amnggl344626la.apps.googleusercontent.com"
+    }
+
+    },
+    "owner": "ltdestiny"
+  }
+}
