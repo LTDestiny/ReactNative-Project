@@ -12,6 +12,8 @@ import miscRoutes from './routes/misc.routes';
 import cartRoutes from './routes/cart.routes';
 import ordersRoutes from './routes/orders.routes';
 import addressesRoutes from './routes/addresses.routes';
+import paymentsRoutes from './routes/payments.routes';
+import adminRoutes from './routes/admin.routes';
 
 const app = express();
 
@@ -49,6 +51,8 @@ app.use('/api/products', productsRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/addresses', addressesRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api', miscRoutes);
 
 // Error handling
@@ -63,7 +67,7 @@ app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${config.nodeEnv}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-  console.log(`📱 Mobile access: http://192.168.1.9:${PORT}/health`);
+  console.log(`📱 Mobile access: http://192.168.1.118:${PORT}/health`);
 });
 
 export default app;

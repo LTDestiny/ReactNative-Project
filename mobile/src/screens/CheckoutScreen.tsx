@@ -7,9 +7,11 @@ import {
   Alert,
   ActivityIndicator,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
 import { Cart, Address } from "../types";
 
@@ -44,6 +46,7 @@ export default function CheckoutScreen() {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -77,50 +80,186 @@ export default function CheckoutScreen() {
   };
 
   const handlePlaceOrder = async () => {
+    console.log("🛒 handlePlaceOrder called");
+    console.log("Selected address:", selectedAddress);
+    console.log("Cart:", cart);
+    console.log("Submitting:", submitting);
+
+    // Validation
     if (!selectedAddress) {
+      console.log("❌ No address selected");
       Alert.alert("Thông báo", "Vui lòng chọn địa chỉ giao hàng");
       return;
     }
 
     if (!cart || cart.items.length === 0) {
+      console.log("❌ Cart is empty");
       Alert.alert("Thông báo", "Giỏ hàng trống");
       return;
     }
 
-    Alert.alert("Xác nhận đơn hàng", "Bạn muốn đặt hàng?", [
-      { text: "Hủy", style: "cancel" },
-      {
-        text: "Đặt hàng",
-        onPress: async () => {
-          try {
-            setSubmitting(true);
-            const response = await api.post("/orders", {
-              address_id: selectedAddress.id,
-              shipping_fee: SHIPPING_FEE,
-            });
+    // Check if already submitting
+    if (submitting) {
+      console.log("❌ Already submitting");
+      return;
+    }
 
-            if (response.data.success) {
-              Alert.alert("Thành công", "Đơn hàng đã được tạo!", [
-                {
-                  text: "OK",
-                  onPress: () => {
-                    navigation.navigate("Orders" as never);
-                  },
-                },
-              ]);
+    console.log("✅ Validation passed");
+
+    // TEMPORARY: For debugging - set to true to skip confirmation
+    const SKIP_CONFIRMATION = false;
+
+    // Create order directly (with optional confirmation)
+    const createOrderDirectly = async () => {
+      try {
+        console.log("🚀 Starting order creation...");
+        setSubmitting(true);
+        
+        const orderData = {
+          address_id: selectedAddress.id,
+          shipping_fee: SHIPPING_FEE,
+        };
+        
+        console.log("📤 Sending order request:", orderData);
+        console.log("🌐 API URL:", api.defaults.baseURL);
+        console.log("🔑 Checking token...");
+        
+        // Check token before request
+        try {
+          const token = await AsyncStorage.getItem("accessToken");
+          console.log("🔑 Token exists:", !!token);
+          if (token) {
+            console.log("🔑 Token preview:", token.substring(0, 20) + "...");
+          } else {
+            console.warn("⚠️ No token found!");
+          }
+        } catch (tokenError) {
+          console.error("❌ Error checking token:", tokenError);
+        }
+        
+        const response = await api.post("/orders", orderData);
+        
+        console.log("✅ Order response received:", response.data);
+
+            if (response.data && response.data.success) {
+              const orderData = response.data.data;
+              const orderId = orderData?.order_id;
+              const totalAmount = orderData?.total_amount || 0;
+              
+              if (orderId) {
+            const message = `Đơn hàng ${orderId.substring(0, 8).toUpperCase()} đã được tạo thành công.\nTổng tiền: ${totalAmount.toLocaleString(
+              "vi-VN"
+            )}đ`;
+            setSuccessMessage(message);
+
+            // Clear cart on backend and update UI
+            try {
+              await api.delete("/cart");
+              setCart(null);
+            } catch (clearError) {
+              console.error("⚠️ Failed to clear cart:", clearError);
+            }
+
+            // Navigate to Orders tab after a short delay
+            setTimeout(() => {
+              (navigation.navigate as any)("Main", {
+                screen: "OrdersTab",
+              });
+
+              // Optional: navigate to order detail after reaching orders tab
+              setTimeout(() => {
+                (navigation.navigate as any)("OrderDetail", {
+                  orderId,
+                });
+              }, 400);
+
+              // Reset success banner
+              setTimeout(() => {
+                setSuccessMessage(null);
+              }, 1500);
+            }, 1200);
+              } else {
+            setSuccessMessage("Đơn hàng đã được tạo thành công!");
+            setTimeout(() => setSuccessMessage(null), 1500);
+              }
+            } else {
+              Alert.alert(
+                "Lỗi",
+                response.data?.message || "Không thể tạo đơn hàng"
+              );
             }
           } catch (error: any) {
-            console.error("Failed to create order:", error);
-            Alert.alert(
-              "Lỗi",
-              error.response?.data?.message || "Không thể tạo đơn hàng"
-            );
+            console.error("❌ Failed to create order:", error);
+            console.error("Error details:", {
+              message: error.message,
+              response: error.response?.data,
+              status: error.response?.status,
+              config: {
+                url: error.config?.url,
+                method: error.config?.method,
+                baseURL: error.config?.baseURL,
+              },
+            });
+            
+            const errorMessage = 
+              error.response?.data?.message || 
+              error.response?.data?.error ||
+              error.message || 
+              "Không thể tạo đơn hàng. Vui lòng thử lại.";
+            
+            console.log("📢 Showing error alert:", errorMessage);
+            Alert.alert("Lỗi", errorMessage);
           } finally {
+            console.log("🏁 Order creation finished");
             setSubmitting(false);
           }
+    };
+
+    // For debugging: Direct order creation without confirmation
+    if (SKIP_CONFIRMATION) {
+      console.log("🚀 Skipping confirmation, creating order directly...");
+      createOrderDirectly();
+      return;
+    }
+
+    // Show confirmation - use window.confirm for web, Alert.alert for mobile
+    if (Platform.OS === "web") {
+      // For web, try window.confirm if available, otherwise use Alert
+      if (typeof window !== "undefined" && window.confirm) {
+        const confirmed = window.confirm("Bạn muốn đặt hàng?");
+        if (confirmed) {
+          console.log("✅ User confirmed (web)");
+          createOrderDirectly();
+        } else {
+          console.log("❌ User cancelled (web)");
+        }
+      } else {
+        // Fallback to Alert for web
+        Alert.alert("Xác nhận đơn hàng", "Bạn muốn đặt hàng?", [
+          { 
+            text: "Hủy", 
+            style: "cancel", 
+            onPress: () => console.log("❌ User cancelled") 
+          },
+          {
+            text: "Đặt hàng",
+            onPress: createOrderDirectly,
+          },
+        ]);
+      }
+    } else {
+      Alert.alert("Xác nhận đơn hàng", "Bạn muốn đặt hàng?", [
+        { 
+          text: "Hủy", 
+          style: "cancel", 
+          onPress: () => console.log("❌ User cancelled") 
         },
-      },
-    ]);
+        {
+          text: "Đặt hàng",
+          onPress: createOrderDirectly,
+        },
+      ]);
+    }
   };
 
   if (loading) {
@@ -140,6 +279,12 @@ export default function CheckoutScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <View style={styles.container}>
+        {successMessage && (
+          <View style={styles.successBanner}>
+            <Text style={styles.successTitle}>🎉 Đặt hàng thành công</Text>
+            <Text style={styles.successMessage}>{successMessage}</Text>
+          </View>
+        )}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Text style={styles.backButton}>← Quay lại</Text>
@@ -257,10 +402,15 @@ export default function CheckoutScreen() {
           <TouchableOpacity
             style={[
               styles.placeOrderButton,
-              (submitting || !selectedAddress) && styles.placeOrderButtonDisabled,
+              (submitting || !selectedAddress || !cart || cart.items.length === 0) && styles.placeOrderButtonDisabled,
             ]}
-            onPress={handlePlaceOrder}
-            disabled={submitting || !selectedAddress}
+            onPress={(e) => {
+              console.log("🔘 Button pressed!", e);
+              console.log("Button state:", { submitting, selectedAddress: !!selectedAddress, cart: !!cart });
+              handlePlaceOrder();
+            }}
+            disabled={submitting || !selectedAddress || !cart || cart.items.length === 0}
+            activeOpacity={0.7}
           >
             {submitting ? (
               <ActivityIndicator color={COLORS.white} />
@@ -282,6 +432,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  successBanner: {
+    backgroundColor: COLORS.success,
+    margin: SIZES.padding,
+    padding: SIZES.padding,
+    borderRadius: SIZES.borderRadius,
+    shadowColor: COLORS.success,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  successTitle: {
+    color: COLORS.white,
+    fontSize: SIZES.lg + 2,
+    fontWeight: "bold",
+  },
+  successMessage: {
+    color: COLORS.white,
+    marginTop: 6,
+    fontSize: SIZES.md,
+    lineHeight: 20,
   },
   centered: {
     flex: 1,

@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -26,13 +27,32 @@ export default function ProfileScreen() {
     }, 1000);
   };
 
+  const handleLogoutConfirm = async () => {
+    try {
+      console.log("🚪 Logging out...");
+      await logout();
+      console.log("✅ Logout completed");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   const handleLogout = () => {
+    console.log("🔘 Logout button pressed");
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm("Bạn có chắc muốn đăng xuất?");
+      if (confirmed) {
+        handleLogoutConfirm();
+      }
+      return;
+    }
+
     Alert.alert("Đăng xuất", "Bạn có chắc muốn đăng xuất?", [
       { text: "Hủy", style: "cancel" },
       {
         text: "Đăng xuất",
         style: "destructive",
-        onPress: logout,
+        onPress: handleLogoutConfirm,
       },
     ]);
   };
@@ -116,10 +136,7 @@ export default function ProfileScreen() {
             <TouchableOpacity
               style={[styles.menuItem, styles.adminMenuItem]}
               onPress={() =>
-                Alert.alert(
-                  "Quản trị viên",
-                  "Tính năng admin đang được phát triển"
-                )
+                (navigation.navigate as any)("AdminDashboard")
               }
             >
               <View style={styles.menuIcon}>
@@ -129,7 +146,7 @@ export default function ProfileScreen() {
                 <Text style={[styles.menuText, styles.adminText]}>
                   Quản trị viên
                 </Text>
-                <Text style={styles.menuSubtext}>Quản lý sản phẩm & đơn hàng</Text>
+                <Text style={styles.menuSubtext}>Thống kê & quản trị</Text>
               </View>
               <Text style={styles.menuArrow}>›</Text>
             </TouchableOpacity>

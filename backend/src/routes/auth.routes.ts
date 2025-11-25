@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, refresh, getProfile } from '../controllers/auth.controller';
+import { register, login, refresh, getProfile, logout } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
@@ -31,5 +31,12 @@ router.post('/refresh', refresh);
  * @access  Private
  */
 router.get('/profile', authenticate, getProfile);
+
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Logout user (stateless)
+ * @access  Private
+ */
+router.post('/logout', authenticate, logout);
 
 export default router;

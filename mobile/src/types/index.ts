@@ -138,3 +138,37 @@ export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface AdminDashboardSummary {
+  total_users: number;
+  total_products: number;
+  total_orders: number;
+  total_revenue: number;
+  today_orders: number;
+}
+
+export interface AdminDashboardData {
+  summary: AdminDashboardSummary;
+  orders: {
+    status_breakdown: Record<string, number>;
+    recent: Array<{
+      id: string;
+      total_amount: number;
+      payment_status: string;
+      status: string;
+      created_at: string;
+      customer_name?: string;
+    }>;
+  };
+  revenue_trend: Array<{
+    date: string;
+    revenue: number;
+  }>;
+  inventory: {
+    low_stock: Array<{
+      id: string;
+      name: string;
+      stock: number;
+    }>;
+  };
+}

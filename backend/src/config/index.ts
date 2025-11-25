@@ -32,6 +32,12 @@ export const config = {
   },
 
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:19000'],
+    // In development, allow all origins for easier testing
+    // In production, set CORS_ORIGIN env variable with comma-separated origins
+    origin: process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+      : process.env.NODE_ENV === 'production'
+        ? ['http://localhost:19000'] // Default for production
+        : true, // Allow all origins in development
   },
 };

@@ -90,10 +90,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
-      setUser(null);
+      await api.post(API_ENDPOINTS.LOGOUT);
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Logout request failed:", error);
+    } finally {
+      try {
+        await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
+      } catch (storageError) {
+        console.error("Failed to clear auth storage:", storageError);
+      }
+      setUser(null);
     }
   };
 

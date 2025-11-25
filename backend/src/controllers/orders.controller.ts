@@ -1,10 +1,19 @@
 import { Request, Response } from 'express';
 import { db } from '../database';
+import { v4 as uuidv4 } from 'uuid';
 
 // Create order from cart
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not authenticated',
+      });
+    }
+
     const { address_id, shipping_fee = 30000 } = req.body;
 
     if (!address_id) {
@@ -82,12 +91,15 @@ export const createOrder = async (req: Request, res: Response) => {
 
     const totalAmount = subtotal + parseFloat(shipping_fee.toString());
 
-    // Begin transaction
-    await db.query('BEGIN');
+    // Get a client for transaction
+    const client = await db.getClient();
 
     try {
+      await client.query('BEGIN');
+      console.log('Transaction started for order creation');
+
       // Create order
-      const order = await db.query(
+      const order = await client.query(
         `INSERT INTO orders (user_id, address_id, total_amount, shipping_fee, status, payment_status)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
@@ -102,14 +114,14 @@ export const createOrder = async (req: Request, res: Response) => {
         const totalPrice = parseFloat(price) * item.quantity;
 
         // Insert order item
-        await db.query(
+        await client.query(
           `INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price)
            VALUES ($1, $2, $3, $4, $5, $6)`,
           [orderId, item.product_id, item.name, item.quantity, price, totalPrice]
         );
 
         // Update inventory
-        await db.query(
+        await client.query(
           `UPDATE inventory 
            SET quantity = quantity - $1, updated_at = now()
            WHERE product_id = $2`,
@@ -118,10 +130,34 @@ export const createOrder = async (req: Request, res: Response) => {
       }
 
       // Clear cart
-      await db.query(`DELETE FROM cart_items WHERE cart_id = $1`, [cartId]);
+      await client.query(`DELETE FROM cart_items WHERE cart_id = $1`, [cartId]);
+
+      // Auto-create COD payment
+      const payment = await client.query(
+        `INSERT INTO payments (id, order_id, payment_provider, amount, currency, status)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING *`,
+        [
+          uuidv4(),
+          orderId,
+          'cod',
+          totalAmount,
+          'VND',
+          'completed',
+        ]
+      );
+
+      // Update order payment status to paid for COD
+      await client.query(
+        `UPDATE orders 
+         SET payment_status = $1, updated_at = now()
+         WHERE id = $2`,
+        ['paid', orderId]
+      );
 
       // Commit transaction
-      await db.query('COMMIT');
+      await client.query('COMMIT');
+      console.log('Order created successfully:', orderId);
 
       res.status(201).json({
         success: true,
@@ -130,17 +166,38 @@ export const createOrder = async (req: Request, res: Response) => {
           order_id: orderId,
           total_amount: totalAmount,
           status: 'pending',
+          payment_status: 'paid',
+          payment_id: payment.rows[0].id,
+          payment_method: 'cod',
         },
       });
     } catch (error) {
-      await db.query('ROLLBACK');
+      console.error('Error in transaction, rolling back:', error);
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackError) {
+        console.error('Error during rollback:', rollbackError);
+      }
       throw error;
+    } finally {
+      client.release();
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating order:', error);
+    
+    // Rollback if transaction is still open
+    try {
+      await db.query('ROLLBACK');
+    } catch (rollbackError) {
+      // Ignore rollback errors
+    }
+
+    // Return detailed error message
+    const errorMessage = error?.message || 'Failed to create order';
     res.status(500).json({
       success: false,
-      message: 'Failed to create order',
+      message: errorMessage,
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
     });
   }
 };
@@ -236,11 +293,30 @@ export const getOrderDetail = async (req: Request, res: Response) => {
       [order_id]
     );
 
+    // Get payment information
+    const payments = await db.query(
+      `SELECT id, payment_provider, amount, currency, status, provider_transaction_id, created_at
+       FROM payments
+       WHERE order_id = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [order_id]
+    );
+
     res.json({
       success: true,
       data: {
         order: order.rows[0],
         items: items.rows,
+        payment: payments.rows.length > 0 ? {
+          payment_id: payments.rows[0].id,
+          payment_provider: payments.rows[0].payment_provider,
+          amount: parseFloat(payments.rows[0].amount),
+          currency: payments.rows[0].currency,
+          status: payments.rows[0].status,
+          provider_transaction_id: payments.rows[0].provider_transaction_id,
+          created_at: payments.rows[0].created_at,
+        } : null,
       },
     });
   } catch (error) {

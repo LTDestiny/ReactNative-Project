@@ -12,7 +12,7 @@ interface ProductQuery {
   limit?: string;
 }
 
-export async function getProducts(req: Request<{}, {}, {}, ProductQuery>, res: Response) {
+export async function getProducts(req: Request<Record<string, never>, Record<string, never>, Record<string, never>, ProductQuery>, res: Response) {
   try {
     const { query = '', category, brand, minPrice, maxPrice, page = '1', limit = '20' } = req.query;
 
@@ -46,7 +46,7 @@ export async function getProducts(req: Request<{}, {}, {}, ProductQuery>, res: R
       WHERE p.is_active = true
     `;
 
-    const params: any[] = [];
+    const params: (string | number)[] = [];
     let paramCount = 0;
 
     // Search by name/description
@@ -100,7 +100,7 @@ export async function getProducts(req: Request<{}, {}, {}, ProductQuery>, res: R
       WHERE p.is_active = true
     `;
 
-    const countParams: any[] = [];
+    const countParams: (string | number)[] = [];
     let countParamIndex = 0;
 
     if (query) {

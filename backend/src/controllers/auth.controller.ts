@@ -25,7 +25,19 @@ interface RefreshRequest {
   refreshToken: string;
 }
 
-export async function register(req: Request<{}, {}, RegisterRequest>, res: Response) {
+export async function logout(req: Request, res: Response) {
+  try {
+    // For stateless JWT, we simply inform client to delete tokens
+    res.json({
+      message: 'Logout successful',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ error: 'Failed to logout' });
+  }
+}
+
+export async function register(req: Request<Record<string, never>, Record<string, never>, RegisterRequest>, res: Response) {
   try {
     const { email, password, full_name, phone } = req.body;
 
@@ -86,7 +98,7 @@ export async function register(req: Request<{}, {}, RegisterRequest>, res: Respo
   }
 }
 
-export async function login(req: Request<{}, {}, LoginRequest>, res: Response) {
+export async function login(req: Request<Record<string, never>, Record<string, never>, LoginRequest>, res: Response) {
   try {
     const { email, password } = req.body;
 
@@ -142,7 +154,7 @@ export async function login(req: Request<{}, {}, LoginRequest>, res: Response) {
   }
 }
 
-export async function refresh(req: Request<{}, {}, RefreshRequest>, res: Response) {
+export async function refresh(req: Request<Record<string, never>, Record<string, never>, RefreshRequest>, res: Response) {
   try {
     const { refreshToken } = req.body;
 
